@@ -10,6 +10,7 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
 
 app.use(bodyParser.json());
 
+// Endpoint to register new user
 app.post('/register', async (req, res) => {
     const { name, email, password, preferences } = req.body;
     const user = new User({ name, email, password, preferences });
@@ -17,6 +18,7 @@ app.post('/register', async (req, res) => {
     res.status(201).send(user);
 });
 
+// Endpoint to login user
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email, password });
@@ -26,18 +28,21 @@ app.post('/login', async (req, res) => {
     res.send(user);
 });
 
+// Endpoint to get preferences of user
 app.get('/preferences', async (req, res) => {
     const { userId } = req.query;
     const user = await User.findById(userId);
     res.send(user.preferences);
 });
 
+// Endpoint to set preferences of user
 app.put('/preferences', async (req, res) => {
     const { userId, preferences } = req.body;
     const user = await User.findByIdAndUpdate(userId, { preferences }, { new: true });
     res.send(user.preferences);
 });
 
+// Endpoint to get email of user
 app.get('/user/email', async (req, res) => {
     const userId = req.query.userId;
     try {
@@ -53,6 +58,7 @@ app.get('/user/email', async (req, res) => {
     }
 });
 
+// Start the server
 const port = process.env.PORT;
 app.listen(port, () => {
     console.log(`User Service listening on port ${port}`);
