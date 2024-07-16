@@ -7,6 +7,8 @@ require('dotenv').config();
 const app = express();
 app.use(bodyParser.json());
 
+const daprPort = process.env.DAPR_HTTP_PORT || 3500; // Dapr port for pub/sub
+
 const daprPortUser = process.env.DAPR_HTTP_PORT_USER || 3500;
 const userServiceAppId = 'user-service';
 
@@ -45,6 +47,17 @@ app.get('/process-news', async (req, res) => {
         res.status(500).send('Error processing news and sending email');
     }
 });
+
+// Function to publish message using Dapr pub/sub
+async function publishNews(email, news) {
+    const message = { email, news };
+    try {
+        await axios.post(`http://localhost:${daprPort}/v1.0/publish/pubsub/news-updates`, message);
+    } catch (error) {
+        console.error('Error publishing news updates:', error.message);
+        throw error;
+    }
+}
 
 // Function to fetch user's preferences from User Service using Dapr service invocation API
 async function getUserPreferences(userId) {
@@ -92,6 +105,7 @@ async function fetchNewsArticles(preferences) {
     }
 }
 
+// Function to generate summaries of the news with AI
 async function generateSummaries(news) {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
   
@@ -113,6 +127,7 @@ async function generateSummaries(news) {
     return summarizedNews;
   }
 
+  // Function to send email of the news to the user
   async function sendEmail(email, news) {
     try {
         const response = await axios.post(`http://localhost:${daprPortNotification}/v1.0/invoke/${notificationServiceAppId}/method/send-email`, {
@@ -129,18 +144,6 @@ async function generateSummaries(news) {
         throw error;
     }
 }
-
-// Function to format email content
-// function formatEmailContent(newsArticles) {
-//     return newsArticles.map(article => `<p><a href="${article.url}">${article.title}</a></p><p>${article.summary}</p>`).join('');
-// }
-
-function formatEmailContent(newsArticles) {
-    return newsArticles.map(article => {
-        return `<p><a href="${article.url}">${article.title}</a></p><p>${article.summary}</p>`;
-    }).join('');
-}
-
 
 // Start the server
 const port = process.env.PORT;
