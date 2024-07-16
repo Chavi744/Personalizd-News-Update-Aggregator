@@ -39,7 +39,7 @@ app.get('/process-news', async (req, res) => {
         const summarizedNews = await generateSummaries(newsArticles);
 
         // Send email to user
-        await sendEmail(userEmail, summarizedNews);
+        await publishNews(userEmail, summarizedNews);
 
         res.status(200).send('News processed and email sent successfully');
     } catch (error) {
