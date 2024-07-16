@@ -6,6 +6,7 @@ const app = express();
 
 app.use(express.json());
 
+// Endpoint to send email to user
 app.post('/send-email', async (req, res) => {
     const { email, news } = req.body;
     const transporter = nodemailer.createTransport({
@@ -31,16 +32,18 @@ app.post('/send-email', async (req, res) => {
     });
 });
 
-// app.post('/dapr/subscribe', (req, res) => {
-//     res.json([
-//         {
-//             pubsubname: 'pubsub',
-//             topic: 'news-updates',
-//             route: 'send-email'
-//         }
-//     ]);
-// });
+// Dapr subscription routes
+app.post('/dapr/subscribe', (req, res) => {
+    res.json([
+        {
+            pubsubname: 'pubsub',
+            topic: 'news-updates',
+            route: 'send-email'
+        }
+    ]);
+});
 
+// Function to formating the news articles
 function formatReadableArticles(articles) {
     let formattedText = "";
     articles.forEach(article => {
@@ -51,6 +54,7 @@ function formatReadableArticles(articles) {
     return formattedText.trim(); // Remove trailing newline
 }
 
+// Start the server
 const port = process.env.PORT;
 app.listen(port, () => {
     console.log(`User Service listening on port ${port}`);
