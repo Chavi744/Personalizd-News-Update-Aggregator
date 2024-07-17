@@ -22,16 +22,47 @@ The News Aggregator System is designed to fetch news articles based on user pref
           +-----------------------------------+---------------------------+
                                Dapr (Redis) for Pub/Sub
 
-## Steps to Run the Application Locally
-# Prerequisites
+# Steps to Run the Application Locally
+## Prerequisites
+Docker and Docker Compose installed
+Dapr CLI installed
+Node.js and npm installed
 1. Docker (https://www.docker.com/products/docker-desktop)
 2. Docker Compose (https://docs.docker.com/compose/)
 3. Dapr CLI (https://docs.dapr.io/getting-started/install-dapr-cli/)
-4. Environment Variables: Create a .env file in each service directory with the following variables:
-    * PORT: The port on which the service will run.
-    * DAPR_HTTP_PORT: The Dapr HTTP port.
-    * EMAIL_USER: Your email address (for sending emails).
-    * EMAIL_PASS: Your email password.
-    * NEWS_API_KEY: API key for NewsData.io.
-    * GEMINI_API_KEY: API key for Google Generative AI.
+
+## Clone the Repository
+
+```bash
+git clone <repository-url>
+cd <repository-directory>
+```
+
+## Set Up Environment Variables
+
+-Update the .env file in news-aggregator-service directory with the following variables:
+```env
+PORT=The port on which the service will run.
+NEWS_API_KEY=API key for NewsData.io.
+GEMINI_API_KEY=API key for Google Generative AI.
+DAPR_HTTP_PORT_USER = The Dapr HTTP port of user-service
+DAPR_HTTP_PORT_NOTIFICATION = The Dapr HTTP port of notification-service
+DAPR_HTTP_PORT = The Dapr HTTP port
+```
+-Update the .env file in user-service directory with the following variables:
+```env
+PORT=The port on which the service will run
+MONGODB_URI=MongoDB uri
+```
+-Update the .env file in notification-service directory with the following variables:
+PORT=The port on which the service will run
+EMAIL_USER=our email address (for sending emails).
+EMAIL_PASS=Your email password.
+
+## Build and Run the Services
+Use Docker Compose to build and run the services.
+```bash
+docker-compose up --build
+```
+This command will start all the microservices along with MongoDB and Redis.
 

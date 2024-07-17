@@ -7,7 +7,7 @@ require('dotenv').config();
 const app = express();
 app.use(bodyParser.json());
 
-const daprPort = process.env.DAPR_HTTP_PORT || 3500; // Dapr port for pub/sub
+const daprPort = process.env.DAPR_HTTP_PORT || 3503; // Dapr port for pub/sub
 
 const daprPortUser = process.env.DAPR_HTTP_PORT_USER || 3500;
 const userServiceAppId = 'user-service';
@@ -40,6 +40,7 @@ app.get('/process-news', async (req, res) => {
 
         // Send email to user
         await publishNews(userEmail, summarizedNews);
+        console.log('Email request published:', { email: userEmail, newsCount: summarizedNews.length });
 
         res.status(200).send('News processed and email sent successfully');
     } catch (error) {
@@ -52,7 +53,12 @@ app.get('/process-news', async (req, res) => {
 async function publishNews(email, news) {
     const message = { email, news };
     try {
-        await axios.post(`http://localhost:${daprPort}/v1.0/publish/pubsub/news-updates`, message);
+        await axios.post(`http://localhost:${daprPort}/v1.0/publish/pubsub/news-updates`, message, {
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        console.log('Published news updates successfully:', message);
     } catch (error) {
         console.error('Error publishing news updates:', error.message);
         throw error;
@@ -92,8 +98,8 @@ async function getUserEmail(userId) {
 
 // Function to fetch news articles based on user preferences (using NewsData.io or any other service)
 async function fetchNewsArticles(preferences) {
-    const apiKey = process.env.NEWS_API_KEY; 
-    const query = preferences.join(','); 
+    const apiKey = process.env.NEWS_API_KEY;
+    const query = preferences.join(',');
     const apiUrl = `https://newsdata.io/api/1/latest?apikey=${apiKey}&q=${query}`;
 
     try {
@@ -108,27 +114,27 @@ async function fetchNewsArticles(preferences) {
 // Function to generate summaries of the news with AI
 async function generateSummaries(news) {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-  
+
     const summarizedNews = await Promise.all(news.map(async (article) => {
-      const prompt = `Summarize the following news article in 2-3 concise sentences:
+        const prompt = `Summarize the following news article in 2-3 concise sentences:
       
       Title: ${article.title}
       Content: ${article.content}`;
-  
-      const result = await model.generateContent(prompt);
-      const summary = result.response.text();
-  
-      return {
-        ...article,
-        summary,
-      };
-    }));
-  
-    return summarizedNews;
-  }
 
-  // Function to send email of the news to the user
-  async function sendEmail(email, news) {
+        const result = await model.generateContent(prompt);
+        const summary = result.response.text();
+
+        return {
+            ...article,
+            summary,
+        };
+    }));
+
+    return summarizedNews;
+}
+
+// Function to send email of the news to the user
+async function sendEmail(email, news) {
     try {
         const response = await axios.post(`http://localhost:${daprPortNotification}/v1.0/invoke/${notificationServiceAppId}/method/send-email`, {
             email,

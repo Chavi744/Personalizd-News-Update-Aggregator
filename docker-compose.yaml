@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  dapr_placement:
+    image: "daprio/dapr:latest"
+    container_name: dapr_placement
+    command: ["./placement", "-port", "50005"] #"./placement"
+    ports:
+      - "50005:50005"
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: user-service
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/your_database_name
+    depends_on:
+      - mongo
+      - redis
+    # volumes:
+    #   - ./components:/components
+
+  user-service-dapr:
+    image: daprio/daprd:latest
+    command: ["./daprd",
+     "-app-id", "user-service",
+     "-app-port", "3000",
+     "-dapr-http-port", "3500",
+     "-placement-host-address", "placement:50005",
+     "-components-path", "/components"]
+    volumes:
+      - "./components/:/components"
+    network_mode: "service:user-service"
+    depends_on:
+      - user-service
+
+  news-aggregator-service:
+    build:
+      context: ./news-aggregator-service
+      dockerfile: Dockerfile
+    container_name: news-aggregator-service
+    ports:
+      - "3001:3001"
+    depends_on:
+      - redis
+      # - user-service
+      # - notification-service
+    # volumes:
+    #   - ./components:/components
+
+  news-aggregator-service-dapr:
+    image: daprio/daprd:edge
+    command: ["./daprd",
+     "-app-id", "news-aggregator-service",
+     "-app-port", "3000",
+     "-dapr-http-port", "3503",
+     "-placement-host-address", "placement:50005",
+     "-components-path", "/components"]
+    volumes:
+      - "./components/:/components"
+    network_mode: "service:news-aggregator-service"
+    depends_on:
+      - news-aggregator-service
+
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: notification-service
+    ports:
+      - "3002:3002"
+    depends_on:
+      - redis
+    # volumes:
+    #   - ./components:/components
+
+  notification-service-dapr:
+    image: daprio/daprd:edge
+    command: ["./daprd",
+     "-app-id", "notification-service",
+     "-app-port", "3000",
+     "-dapr-http-port", "3502",
+     "-placement-host-address", "placement:50005",
+     "-components-path", "/components"]
+    volumes:
+      - "./components/:/components"
+    network_mode: "service:notification-service"
+    depends_on:
+      - notification-service
+
+volumes:
+  mongo-data:

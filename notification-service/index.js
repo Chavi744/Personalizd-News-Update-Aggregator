@@ -8,6 +8,8 @@ app.use(express.json());
 
 // Endpoint to send email to user
 app.post('/send-email', async (req, res) => {
+    console.log('Received email request:', req.body);
+
     const { email, news } = req.body;
     const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -21,7 +23,7 @@ app.post('/send-email', async (req, res) => {
         from: process.env.EMAIL_USER,
         to: email,
         subject: 'Your Daily News Update',
-        text: formatReadableArticles(news)
+        text: Array.isArray(Array) ? formatReadableArticles(news) : news //formatReadableArticles(news)
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -33,12 +35,13 @@ app.post('/send-email', async (req, res) => {
 });
 
 // Dapr subscription routes
-app.post('/dapr/subscribe', (req, res) => {
+app.get('/dapr/subscribe', (req, res) => {
+    console.log('Dapr subscription route called');
     res.json([
         {
-            pubsubname: 'pubsub',
-            topic: 'news-updates',
-            route: 'send-email'
+            pubsubname: "pubsub",
+            topic: "news-updates",
+            route: "send-email" 
         }
     ]);
 });
@@ -57,5 +60,5 @@ function formatReadableArticles(articles) {
 // Start the server
 const port = process.env.PORT;
 app.listen(port, () => {
-    console.log(`User Service listening on port ${port}`);
+    console.log(`Notification Service listening on port ${port}`);
 });
