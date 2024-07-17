@@ -25,12 +25,12 @@ The News Aggregator System is designed to fetch news articles based on user pref
 ```
 # Steps to Run the Application Locally
 ## Prerequisites
-Docker and Docker Compose installed
-Dapr CLI installed
-Node.js and npm installed
-1. Docker (https://www.docker.com/products/docker-desktop)
-2. Docker Compose (https://docs.docker.com/compose/)
-3. Dapr CLI (https://docs.dapr.io/getting-started/install-dapr-cli/)
+1. Docker and Docker Compose installed
+    * Docker (https://www.docker.com/products/docker-desktop)
+    * Docker Compose (https://docs.docker.com/compose/)
+2. Dapr CLI installed
+    * Dapr CLI (https://docs.dapr.io/getting-started/install-dapr-cli/)
+3. Node.js and npm installed
 
 ## Clone the Repository
 

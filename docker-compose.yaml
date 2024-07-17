@@ -10,7 +10,7 @@ services:
   dapr_placement:
     image: "daprio/dapr:latest"
     container_name: dapr_placement
-    command: ["./placement", "-port", "50005"] #"./placement"
+    command: [ "./placement", "-port", "50005" ] #"./placement"
     ports:
       - "50005:50005"
 
@@ -29,7 +29,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - MONGODB_URI=mongodb://mongo:27017/your_database_name
+      - MONGODB_URI=mongodb://mongo:27017/newsapp
     depends_on:
       - mongo
       - redis
@@ -38,12 +38,20 @@ services:
 
   user-service-dapr:
     image: daprio/daprd:latest
-    command: ["./daprd",
-     "-app-id", "user-service",
-     "-app-port", "3000",
-     "-dapr-http-port", "3500",
-     "-placement-host-address", "placement:50005",
-     "-components-path", "/components"]
+    command:
+      [
+        "./daprd",
+        "-app-id",
+        "user-service",
+        "-app-port",
+        "3000",
+        "-dapr-http-port",
+        "3500",
+        "-placement-host-address",
+        "dapr_placement:50005",
+        "-components-path",
+        "/components"
+      ]
     volumes:
       - "./components/:/components"
     network_mode: "service:user-service"
@@ -59,19 +67,27 @@ services:
       - "3001:3001"
     depends_on:
       - redis
-      # - user-service
-      # - notification-service
-    # volumes:
-    #   - ./components:/components
+      - user-service
+      - notification-service
+      # volumes:
+      #   - ./components:/components
 
   news-aggregator-service-dapr:
-    image: daprio/daprd:edge
-    command: ["./daprd",
-     "-app-id", "news-aggregator-service",
-     "-app-port", "3000",
-     "-dapr-http-port", "3503",
-     "-placement-host-address", "placement:50005",
-     "-components-path", "/components"]
+    image: daprio/daprd:latest
+    command:
+      [
+        "./daprd",
+        "-app-id",
+        "news-aggregator-service",
+        "-app-port",
+        "3001",
+        "-dapr-http-port",
+        "3501",
+        "-placement-host-address",
+        "dapr_placement:50005",
+        "-components-path",
+        "/components"
+      ]
     volumes:
       - "./components/:/components"
     network_mode: "service:news-aggregator-service"
@@ -91,13 +107,21 @@ services:
     #   - ./components:/components
 
   notification-service-dapr:
-    image: daprio/daprd:edge
-    command: ["./daprd",
-     "-app-id", "notification-service",
-     "-app-port", "3000",
-     "-dapr-http-port", "3502",
-     "-placement-host-address", "placement:50005",
-     "-components-path", "/components"]
+    image: daprio/daprd:latest
+    command:
+      [
+        "./daprd",
+        "-app-id",
+        "notification-service",
+        "-app-port",
+        "3002",
+        "-dapr-http-port",
+        "3502",
+        "-placement-host-address",
+        "dapr_placement:50005",
+        "-components-path",
+        "/components"
+      ]
     volumes:
       - "./components/:/components"
     network_mode: "service:notification-service"
