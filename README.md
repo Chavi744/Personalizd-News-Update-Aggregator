@@ -56,7 +56,7 @@ PORT=The port on which the service will run
 MONGODB_URI=MongoDB uri
 ```
 -Update the .env file in notification-service directory with the following variables:
-``env
+```env
 PORT=The port on which the service will run
 EMAIL_USER=our email address (for sending emails).
 EMAIL_PASS=Your email password.
