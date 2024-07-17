@@ -9,6 +9,7 @@ The News Aggregator System is designed to fetch news articles based on user pref
 3. Notification Service: Sends the summarized news to the user's email.
 
 ## System Diagram
+```
 +----------------------+       +----------------------+       +----------------------+
 |  User Service        |       |  News Aggregator     |       |  Notification Service|
 |                      |       |  Service             |       |                      |
@@ -21,7 +22,7 @@ The News Aggregator System is designed to fetch news articles based on user pref
           |                                   |                           |
           +-----------------------------------+---------------------------+
                                Dapr (Redis) for Pub/Sub
-
+```
 # Steps to Run the Application Locally
 ## Prerequisites
 Docker and Docker Compose installed
@@ -55,9 +56,11 @@ PORT=The port on which the service will run
 MONGODB_URI=MongoDB uri
 ```
 -Update the .env file in notification-service directory with the following variables:
+``env
 PORT=The port on which the service will run
 EMAIL_USER=our email address (for sending emails).
 EMAIL_PASS=Your email password.
+```
 
 ## Build and Run the Services
 Use Docker Compose to build and run the services.
