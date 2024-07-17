@@ -13,12 +13,8 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Install Dapr CLI
-# RUN curl -fsSL https://raw.githubusercontent.com/dapr/cli/master/install/install.sh | /bin/bash
-
 # Expose the port
 EXPOSE 3001
 
 # Command to run the app
-# CMD ["dapr", "run", "--app-id", "news-aggregator-service", "--app-port", "3001", "--components-path", "/components", "--", "node", "index.js"]
 CMD [ "node", "index.js" ]

@@ -13,15 +13,8 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Copy Dapr binaries to a location in the PATH
-# RUN curl -fsSL https://raw.githubusercontent.com/dapr/cli/master/install/install.sh | /bin/bash
-
-# Verify Dapr installation
-# RUN dapr --version && daprd --version
-
 # Expose the port
 EXPOSE 3000
 
 # Command to run the app
-# CMD ["dapr", "run", "--app-id", "user-service", "--app-port", "3001", "--components-path", "/components", "--", "node", "index.js"]
 CMD [ "node", "index.js" ]

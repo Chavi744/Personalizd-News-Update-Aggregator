@@ -13,7 +13,7 @@ The News Aggregator System is designed to fetch news articles based on user pref
 +----------------------+       +----------------------+       +----------------------+
 |  User Service        |       |  News Aggregator     |       |  Notification Service|
 |                      |       |  Service             |       |                      |
-|  - Manages user info |<------|  - Fetches news      |<------|  - Sends email       |
+|  - Manages user info |<------|  - Fetches news      |------>|  - Sends email       |
 |  - Provides user     |       |  - Summarizes news   |       |                      |
 |    preferences       |       |  - Publishes news    |       |                      |
 |                      |       |                      |       |                      |
