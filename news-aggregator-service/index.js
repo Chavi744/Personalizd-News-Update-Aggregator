@@ -39,7 +39,8 @@ app.get('/process-news', async (req, res) => {
         const summarizedNews = await generateSummaries(newsArticles);
 
         // Send email to user
-        await publishNews(userEmail, summarizedNews);
+        await sendEmail(userEmail, summarizedNews);
+        //await publishNews(userEmail, summarizedNews);
         console.log('Email request published:', { email: userEmail, newsCount: summarizedNews.length });
 
         res.status(200).send('News processed and email sent successfully');
@@ -68,7 +69,7 @@ async function publishNews(email, news) {
 // Function to fetch user's preferences from User Service using Dapr service invocation API
 async function getUserPreferences(userId) {
     try {
-        const response = await axios.get(`http://localhost:${daprPortUser}/v1.0/invoke/${userServiceAppId}/method/preferences`, {
+        const response = await axios.get(`http://user-service-dapr:${daprPortUser}/v1.0/invoke/${userServiceAppId}/method/preferences`, {
             params: { userId }
         });
 
@@ -82,7 +83,7 @@ async function getUserPreferences(userId) {
 // Function to fetch user's email from User Service using Dapr service invocation API
 async function getUserEmail(userId) {
     try {
-        const response = await axios.get(`http://localhost:${daprPortUser}/v1.0/invoke/${userServiceAppId}/method/user/email/`, {
+        const response = await axios.get(`http://user-service-dapr:${daprPortUser}/v1.0/invoke/${userServiceAppId}/method/user/email/`, {
             params: { userId }
         });
         return response.data.email;
@@ -136,7 +137,7 @@ async function generateSummaries(news) {
 // Function to send email of the news to the user
 async function sendEmail(email, news) {
     try {
-        const response = await axios.post(`http://localhost:${daprPortNotification}/v1.0/invoke/${notificationServiceAppId}/method/send-email`, {
+        const response = await axios.post(`http://notification-service-dapr:${daprPortNotification}/v1.0/invoke/${notificationServiceAppId}/method/send-email`, {
             email,
             news
         });
