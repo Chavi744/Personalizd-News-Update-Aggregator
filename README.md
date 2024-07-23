@@ -41,7 +41,7 @@ cd <repository-directory>
 
 ## Set Up Environment Variables
 
--Update the .env file in news-aggregator-service directory with the following variables:
+-Create the .env file in news-aggregator-service directory with the following variables:
 ```env
 PORT=The port on which the service will run.
 NEWS_API_KEY=API key for NewsData.io.
@@ -50,12 +50,12 @@ DAPR_HTTP_PORT_USER = The Dapr HTTP port of user-service
 DAPR_HTTP_PORT_NOTIFICATION = The Dapr HTTP port of notification-service
 DAPR_HTTP_PORT = The Dapr HTTP port
 ```
--Update the .env file in user-service directory with the following variables:
+-Create the .env file in user-service directory with the following variables:
 ```env
 PORT=The port on which the service will run
 MONGODB_URI=MongoDB uri
 ```
--Update the .env file in notification-service directory with the following variables:
+-Create the .env file in notification-service directory with the following variables:
 ```env
 PORT=The port on which the service will run
 EMAIL_USER=our email address (for sending emails).
